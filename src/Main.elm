@@ -1,8 +1,12 @@
 module Main exposing (..)
 
 import Browser
-import Html exposing (Html, text, div, h1, img)
-import Html.Attributes exposing (src)
+import Element as El exposing (Element, column, el, row, text)
+import Element.Background as Background
+import Element.Font as Font
+import Element.Region exposing (heading)
+import Html exposing (Html)
+
 
 
 ---- MODEL ----
@@ -36,10 +40,19 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-    div []
-        [ img [ src "/logo.svg" ] []
-        , h1 [] [ text "Your Elm App is working!" ]
-        ]
+    El.layout [] header
+
+
+header : Element Msg
+header =
+    el
+        [ El.width El.fill, El.height <| El.px 174, Background.color <| El.rgb255 250 251 252 ]
+    <|
+        El.textColumn
+            [ El.centerY, El.width El.fill ]
+            [ el [ El.centerX, heading 1, Font.size 40 ] <| text "Trending"
+            , El.paragraph [ El.centerX ] [ text "See what the GitHub community is most excited about today." ]
+            ]
 
 
 

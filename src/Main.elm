@@ -10,7 +10,7 @@ import Element.Region exposing (mainContent)
 import Html exposing (Html)
 import Http
 import Views.Header exposing (headerView)
-import Views.TrendingReposList exposing (TrendingReposList, trendingReposListDecoder)
+import Views.TrendingReposList exposing (TrendingReposList, trendingReposListDecoder, trendingReposView)
 
 
 
@@ -123,11 +123,12 @@ trendingView model =
         [ El.width El.fill
         ]
         [ el [ El.width <| fillPortion 1 ] El.none
-        , el
+        , column
             [ El.width <| fillPortion 3
             ]
-          <|
-            trendingViewControls model
+            [ trendingViewControls model
+            , trendingReposView
+            ]
         , el [ El.width <| fillPortion 1 ] El.none
         ]
 

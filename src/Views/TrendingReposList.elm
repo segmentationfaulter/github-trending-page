@@ -1,7 +1,8 @@
-module Views.TrendingReposList exposing (TrendingReposList, trendingReposListDecoder)
+module Views.TrendingReposList exposing (TrendingReposList, trendingReposListDecoder, trendingReposView)
 
 import Json.Decode as Decode
-
+import Browser.Dom exposing (Element)
+import Element as El exposing (Element, column, el, fillPortion, row, text)
 
 type alias TrendingRepo =
     { author : String
@@ -72,3 +73,17 @@ trendingReposListDecoder =
                 )
     in
     Decode.list trendingRepoDecoder
+
+trendingReposView : Element msg
+trendingReposView =
+    column
+        [
+            El.width El.fill
+        ]
+        [
+            trendingReposList
+        ]
+
+trendingReposList : Element msg
+trendingReposList =
+    text "Trending repos"

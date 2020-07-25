@@ -124,7 +124,7 @@ trendingView model repos =
         ]
         [ el [ El.width <| fillPortion 1 ] El.none
         , column
-            [ El.width <| fillPortion 3
+            [ El.width <| fillPortion 5
             ]
             [ trendingViewControls model
             , trendingReposView repos

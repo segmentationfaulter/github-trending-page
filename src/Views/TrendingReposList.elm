@@ -102,13 +102,25 @@ trendingRepoItem repo =
                   <|
                     text repo.name
                 ]
+
+        repoDescription : Element msg
+        repoDescription =
+            El.paragraph
+                [ Font.alignLeft
+                , Font.size 14
+                , El.spacing 7 
+                , Font.color <| El.rgb255 88 96 105
+                ]
+                [ text repo.description ]
     in
     row
-        []
+        [ El.width El.fill ]
         [ column
-            []
+            [ El.width <| El.fillPortion 8 ]
             [ El.newTabLink [] { url = repo.url, label = repoTitle }
+            , repoDescription
             ]
+        , el [ El.width <| El.fillPortion 2 ] El.none
         ]
 
 

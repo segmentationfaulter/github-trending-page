@@ -74,16 +74,36 @@ trendingReposListDecoder =
     in
     Decode.list trendingRepoDecoder
 
-trendingReposView : Element msg
-trendingReposView =
+trendingReposView : TrendingReposList -> Element msg
+trendingReposView repos =
     column
         [
             El.width El.fill
         ]
+        <| trendingReposList repos
+
+trendingRepoItem : TrendingRepo -> Element msg
+trendingRepoItem repo =
+    let
+        repoTitle : Element msg
+        repoTitle =
+            el
+                []
+                <| text (repo.author ++ "/" ++ repo.name)
+    in
+    
+    row
+        []
         [
-            trendingReposList
+            column
+                []
+                [
+                    repoTitle
+                ]
         ]
 
-trendingReposList : Element msg
-trendingReposList =
-    text "Trending repos"
+
+
+trendingReposList : TrendingReposList -> List (Element msg)
+trendingReposList repos =
+    List.map trendingRepoItem repos

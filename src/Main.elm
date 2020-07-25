@@ -75,10 +75,10 @@ view model =
                     el [ Font.size 40, El.centerX, El.centerY ] <| text "Loading..."
 
                 ReposView trendingRepos ->
-                    elmUIView model
+                    elmUIView model trendingRepos
 
                 DevsView ->
-                    elmUIView model
+                    el [ Font.size 40, El.centerX, El.centerY ] <| text "Loading..."
 
                 Failure error ->
                     failureView error
@@ -105,20 +105,20 @@ failureView error =
             el [] <| text errorMsg
 
 
-elmUIView : Model -> Element Msg
-elmUIView model =
+elmUIView : Model -> TrendingReposList -> Element Msg
+elmUIView model repos =
     column
         [ mainContent
         , El.width El.fill
         , El.spacing 40
         ]
         [ headerView
-        , trendingView model
+        , trendingView model repos
         ]
 
 
-trendingView : Model -> Element Msg
-trendingView model =
+trendingView : Model -> TrendingReposList -> Element Msg
+trendingView model repos =
     row
         [ El.width El.fill
         ]
@@ -127,7 +127,7 @@ trendingView model =
             [ El.width <| fillPortion 3
             ]
             [ trendingViewControls model
-            , trendingReposView
+            , trendingReposView repos
             ]
         , el [ El.width <| fillPortion 1 ] El.none
         ]

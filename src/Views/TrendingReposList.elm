@@ -181,7 +181,7 @@ trendingRepoItem repo =
             , repoDescription
             , bottomLeftRow
             ]
-        , el [ El.width <| El.fillPortion 2, El.alignBottom ] starsToday
+        , el [ El.width <| El.fillPortion 2, El.alignBottom, Font.alignRight ] starsToday
         ]
 
 

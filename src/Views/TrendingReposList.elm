@@ -159,6 +159,15 @@ trendingRepoItem repo =
                 , El.row [] [ Icons.starIcon, text <| " " ++ String.fromInt repo.stars ]
                 , El.row [] [ Icons.forkIcon, text <| " " ++ String.fromInt repo.forks ]
                 ]
+
+        starsToday : Element msg
+        starsToday =
+            El.paragraph
+                [Font.color <| El.rgb255 88 96 105, Font.size 12]
+                [
+                    Icons.starIcon,
+                    text <| " " ++ String.fromInt repo.starsToday ++ " stars today"
+                ]
     in
     row
         [ El.width El.fill
@@ -172,7 +181,7 @@ trendingRepoItem repo =
             , repoDescription
             , bottomLeftRow
             ]
-        , el [ El.width <| El.fillPortion 2 ] El.none
+        , el [ El.width <| El.fillPortion 2, El.alignBottom ] starsToday
         ]
 
 

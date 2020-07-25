@@ -3,6 +3,7 @@ module Views.TrendingReposList exposing (TrendingReposList, trendingReposListDec
 import Browser.Dom exposing (Element)
 import Element as El exposing (Element, column, el, fillPortion, row, text)
 import Element.Font as Font
+import Element.Border as Border
 import Json.Decode as Decode
 
 
@@ -108,15 +109,19 @@ trendingRepoItem repo =
             El.paragraph
                 [ Font.alignLeft
                 , Font.size 14
-                , El.spacing 7 
+                , El.spacing 7
                 , Font.color <| El.rgb255 88 96 105
                 ]
                 [ text repo.description ]
     in
     row
-        [ El.width El.fill ]
+        [ El.width El.fill
+        , El.padding 16
+        , Border.widthEach { left = 1, bottom = 1, right = 1, top = 0 }
+        , Border.color <| El.rgb255 225 228 232
+        ]
         [ column
-            [ El.width <| El.fillPortion 8 ]
+            [ El.width <| El.fillPortion 8, El.spacing 8 ]
             [ El.newTabLink [] { url = repo.url, label = repoTitle }
             , repoDescription
             ]

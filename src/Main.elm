@@ -227,6 +227,7 @@ trendingViewControls model =
                 , roundedBorders
                 , borderWidth
                 , borderColor
+                , El.height <| El.px 32
                 ]
                 { onPress = Just msg, label = text label }
     in

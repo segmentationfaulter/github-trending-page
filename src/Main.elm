@@ -18,13 +18,15 @@ import Views.TrendingReposList exposing (TrendingReposList, trendingReposListDec
 
 
 type Model
-    = ReposView
+    = Loading
+    | ReposView TrendingReposList
     | DevsView
+    | Failure Http.Error
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( ReposView, fetchTrendingRepos )
+    ( Loading, fetchTrendingRepos )
 
 
 fetchTrendingRepos : Cmd Msg
@@ -40,27 +42,23 @@ fetchTrendingRepos =
 
 
 type Msg
-    = SwitchToRepos
-    | SwitchToDevs
+    = Noop
     | GotTrendingRepos (Result Http.Error TrendingReposList)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        SwitchToRepos ->
-            ( ReposView, Cmd.none )
-
-        SwitchToDevs ->
-            ( DevsView, Cmd.none )
-
         GotTrendingRepos result ->
             case result of
                 Ok trendingRepos ->
-                    ( ReposView, Cmd.none )
+                    ( ReposView trendingRepos, Cmd.none )
 
                 Err httpError ->
-                    ( ReposView, Cmd.none )
+                    ( Failure httpError, Cmd.none )
+
+        Noop ->
+            ( model, Cmd.none )
 
 
 
@@ -69,7 +67,42 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-    El.layout [] <| elmUIView model
+    let
+        selectedView : Element Msg
+        selectedView =
+            case model of
+                Loading ->
+                    el [ Font.size 40, El.centerX, El.centerY ] <| text "Loading..."
+
+                ReposView trendingRepos ->
+                    elmUIView model
+
+                DevsView ->
+                    elmUIView model
+
+                Failure error ->
+                    failureView error
+    in
+    El.layout [] <| selectedView
+
+
+failureView : Http.Error -> Element Msg
+failureView error =
+    case error of
+        Http.BadUrl errorMsg ->
+            el [] <| text errorMsg
+
+        Http.Timeout ->
+            el [] <| text "It is taking too long, try refreshing"
+
+        Http.NetworkError ->
+            el [] <| text "Looks like you don't have internet"
+
+        Http.BadStatus _ ->
+            el [] <| text "We got an error reponse from server"
+
+        Http.BadBody errorMsg ->
+            el [] <| text errorMsg
 
 
 elmUIView : Model -> Element Msg
@@ -102,25 +135,39 @@ trendingView model =
 trendingViewControls : Model -> Element Msg
 trendingViewControls model =
     let
+        reposButtonLabel : String
+        reposButtonLabel =
+            "Repositories"
+
+        devsButtonLabel : String
+        devsButtonLabel =
+            "Developers"
+
         renderButton : String -> Msg -> Element Msg
         renderButton label msg =
             let
                 isActive : Bool
                 isActive =
                     case model of
+                        ReposView _ ->
+                            if label == reposButtonLabel then
+                                True
+
+                            else
+                                False
+
                         DevsView ->
-                            if label == "Developers" then
+                            if label == devsButtonLabel then
                                 True
 
                             else
                                 False
 
-                        ReposView ->
-                            if label == "Repositories" then
-                                True
+                        Loading ->
+                            False
 
-                            else
-                                False
+                        Failure _ ->
+                            False
 
                 activeStateColor : El.Color
                 activeStateColor =
@@ -128,7 +175,7 @@ trendingViewControls model =
 
                 roundedBorders : El.Attribute Msg
                 roundedBorders =
-                    if label == "Repositories" then
+                    if label == reposButtonLabel then
                         Border.roundEach { topLeft = 6, bottomLeft = 6, topRight = 0, bottomRight = 0 }
 
                     else
@@ -191,8 +238,8 @@ trendingViewControls model =
         , El.padding 16
         , Background.color <| El.rgb255 246 248 250
         ]
-        [ renderButton "Repositories" SwitchToRepos
-        , renderButton "Developers" SwitchToDevs
+        [ renderButton reposButtonLabel Noop
+        , renderButton devsButtonLabel Noop
         ]
 
 

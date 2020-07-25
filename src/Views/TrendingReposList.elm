@@ -8,8 +8,8 @@ type alias TrendingRepo =
     , name : String
     , url : String
     , description : String
-    , language : String
-    , languageColor : String
+    , language : Maybe String
+    , languageColor : Maybe String
     , stars : Int
     , forks : Int
     , starsToday : Int
@@ -39,10 +39,10 @@ trendingReposListDecoder =
                     Decode.field "description" Decode.string
 
                 languageDecoder =
-                    Decode.field "language" Decode.string
+                    Decode.maybe (Decode.field "language" Decode.string)
 
                 languageColorDecoder =
-                    Decode.field "languageColor" Decode.string
+                    Decode.maybe (Decode.field "languageColor" Decode.string)
 
                 starsDecoder =
                     Decode.field "stars" Decode.int

@@ -55,15 +55,17 @@ trendingReposListDecoder =
             in
             Decode.map2
                 (\a b -> { author = a.uthor, name = a.name, url = a.url, description = a.description, language = a.language, languageColor = a.languageColor })
-                Decode.map6
-                (\author name url description language languageColor -> { author = author, name = name, url = url, description = description, language = language, languageColor = languageColor })
-                authorDecoder
-                nameDecoder
-                urlDecoder
-                descriptionDecoder
-                languageDecoder
-                languageColorDecoder
-                Decode.map3
-                (\stars forks starsToday -> { stars = stars, forks = forks, starsToday = starsToday })
+                (Decode.map6
+                    (\author name url description language languageColor -> { author = author, name = name, url = url, description = description, language = language, languageColor = languageColor })
+                    authorDecoder
+                    nameDecoder
+                    urlDecoder
+                    descriptionDecoder
+                    languageDecoder
+                    languageColorDecoder
+                )
+                (Decode.map3
+                    (\stars forks starsToday -> { stars = stars, forks = forks, starsToday = starsToday })
+                )
     in
     Decode.list trendingRepoDecoder

@@ -131,7 +131,7 @@ trendingRepoItem repo =
                             case rgbColorResult of
                                 Result.Ok color ->
                                     row
-                                        [El.spacing 5]
+                                        [ El.spacing 5 ]
                                         [ el
                                             [ El.width <| El.px 12
                                             , El.height <| El.px 12

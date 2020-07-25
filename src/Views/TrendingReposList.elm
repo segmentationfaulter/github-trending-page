@@ -118,8 +118,9 @@ trendingRepoItem repo =
         bottomLeftRow : Element msg
         bottomLeftRow =
             row
-                [ Font.color <| El.rgb255 88 96 105, Font.size 12, El.width El.fill ]
+                [ Font.color <| El.rgb255 88 96 105, Font.size 12, El.width El.fill, El.spacing 16 ]
                 [ El.row [] [ Icons.starIcon, text <| " " ++ String.fromInt repo.stars ]
+                , El.row [] [ Icons.forkIcon, text <| " " ++ String.fromInt repo.forks ]
                 ]
     in
     row

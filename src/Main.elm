@@ -8,8 +8,7 @@ import Element.Font as Font
 import Element.Input as InputEl
 import Element.Region exposing (mainContent)
 import Html exposing (Html)
-
-import Views.Header exposing(headerView)
+import Views.Header exposing (headerView)
 
 
 
@@ -38,8 +37,11 @@ type Msg
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-       SwitchToRepos -> (ReposView, Cmd.none)
-       SwitchToDevs -> (DevsView, Cmd.none)
+        SwitchToRepos ->
+            ( ReposView, Cmd.none )
+
+        SwitchToDevs ->
+            ( DevsView, Cmd.none )
 
 
 

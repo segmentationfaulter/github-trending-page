@@ -1,8 +1,10 @@
 module Views.TrendingReposList exposing (TrendingReposList, trendingReposListDecoder, trendingReposView)
 
-import Json.Decode as Decode
 import Browser.Dom exposing (Element)
 import Element as El exposing (Element, column, el, fillPortion, row, text)
+import Element.Font as Font
+import Json.Decode as Decode
+
 
 type alias TrendingRepo =
     { author : String
@@ -74,34 +76,40 @@ trendingReposListDecoder =
     in
     Decode.list trendingRepoDecoder
 
+
 trendingReposView : TrendingReposList -> Element msg
 trendingReposView repos =
     column
-        [
-            El.width El.fill
+        [ El.width El.fill
         ]
-        <| trendingReposList repos
+    <|
+        trendingReposList repos
+
 
 trendingRepoItem : TrendingRepo -> Element msg
 trendingRepoItem repo =
     let
         repoTitle : Element msg
         repoTitle =
-            el
-                []
-                <| text (repo.author ++ "/" ++ repo.name)
+            row
+                [ Font.color <| El.rgb255 3 102 214 ]
+                [ el
+                    []
+                  <|
+                    text (repo.author ++ "/")
+                , el
+                    [ Font.semiBold ]
+                  <|
+                    text repo.name
+                ]
     in
-    
     row
         []
-        [
-            column
-                []
-                [
-                    repoTitle
-                ]
+        [ column
+            []
+            [ El.newTabLink [] { url = repo.url, label = repoTitle }
+            ]
         ]
-
 
 
 trendingReposList : TrendingReposList -> List (Element msg)

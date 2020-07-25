@@ -6,8 +6,10 @@ import Element.Background as Background
 import Element.Border as Border
 import Element.Font as Font
 import Element.Input as InputEl
-import Element.Region exposing (heading, mainContent)
+import Element.Region exposing (mainContent)
 import Html exposing (Html)
+
+import Header exposing(headerView)
 
 
 
@@ -59,18 +61,6 @@ elmUIView model =
         [ headerView
         , trendingView model
         ]
-
-
-headerView : Element Msg
-headerView =
-    el
-        [ El.width El.fill, El.height <| El.px 174, Background.color <| El.rgb255 250 251 252 ]
-    <|
-        El.textColumn
-            [ El.centerY, El.width El.fill ]
-            [ el [ El.centerX, heading 1, Font.size 40 ] <| text "Trending"
-            , El.paragraph [ El.centerX ] [ text "See what the GitHub community is most excited about today." ]
-            ]
 
 
 trendingView : Model -> Element Msg

@@ -1,4 +1,4 @@
-module Views.TrendingReposList exposing (TrendingRepo, TrendingReposList, trendingReposListDecoder)
+module Views.TrendingReposList exposing (TrendingReposList, trendingReposListDecoder)
 
 import Json.Decode as Decode
 
@@ -54,7 +54,7 @@ trendingReposListDecoder =
                     Decode.field "currentPeriodStars" Decode.int
             in
             Decode.map2
-                (\a b -> { author = a.uthor, name = a.name, url = a.url, description = a.description, language = a.language, languageColor = a.languageColor })
+                (\a b -> { author = a.author, name = a.name, url = a.url, description = a.description, language = a.language, languageColor = a.languageColor, stars = b.stars, forks = b.forks, starsToday = b.starsToday })
                 (Decode.map6
                     (\author name url description language languageColor -> { author = author, name = name, url = url, description = description, language = language, languageColor = languageColor })
                     authorDecoder
@@ -66,6 +66,9 @@ trendingReposListDecoder =
                 )
                 (Decode.map3
                     (\stars forks starsToday -> { stars = stars, forks = forks, starsToday = starsToday })
+                    starsDecoder
+                    forksDecoder
+                    starsTodayDecoder
                 )
     in
     Decode.list trendingRepoDecoder

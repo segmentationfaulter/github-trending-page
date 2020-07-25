@@ -8,7 +8,9 @@ import Element.Font as Font
 import Element.Input as InputEl
 import Element.Region exposing (mainContent)
 import Html exposing (Html)
+import Http
 import Views.Header exposing (headerView)
+import Views.TrendingReposList exposing (TrendingReposList, trendingReposListDecoder)
 
 
 
@@ -22,7 +24,15 @@ type Model
 
 init : ( Model, Cmd Msg )
 init =
-    ( ReposView, Cmd.none )
+    ( ReposView, fetchTrendingRepos )
+
+
+fetchTrendingRepos : Cmd Msg
+fetchTrendingRepos =
+    Http.get
+        { url = "https://ghapi.huchen.dev/repositories"
+        , expect = Http.expectJson GotTrendingRepos trendingReposListDecoder
+        }
 
 
 
@@ -32,6 +42,7 @@ init =
 type Msg
     = SwitchToRepos
     | SwitchToDevs
+    | GotTrendingRepos (Result Http.Error TrendingReposList)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -42,6 +53,14 @@ update msg model =
 
         SwitchToDevs ->
             ( DevsView, Cmd.none )
+
+        GotTrendingRepos result ->
+            case result of
+                Ok trendingRepos ->
+                    ( ReposView, Cmd.none )
+
+                Err httpError ->
+                    ( ReposView, Cmd.none )
 
 
 

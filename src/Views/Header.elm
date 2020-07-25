@@ -1,4 +1,4 @@
-module Header exposing(headerView)
+module Views.Header exposing(headerView)
 
 import Element as El exposing (Element, el, text)
 import Element.Region exposing (heading)

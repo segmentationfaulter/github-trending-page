@@ -9,7 +9,7 @@ import Element.Input as InputEl
 import Element.Region exposing (mainContent)
 import Html exposing (Html)
 
-import Header exposing(headerView)
+import Views.Header exposing(headerView)
 
 
 

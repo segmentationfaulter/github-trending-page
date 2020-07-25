@@ -12,7 +12,8 @@
             "elm/http": "2.0.0",
             "elm/json": "1.1.2",
             "elm/svg": "1.0.1",
-            "mdgriffith/elm-ui": "1.1.7"
+            "mdgriffith/elm-ui": "1.1.7",
+            "rtfeldman/elm-hex": "1.0.0"
         },
         "indirect": {
             "elm/bytes": "1.0.8",

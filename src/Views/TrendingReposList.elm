@@ -2,8 +2,10 @@ module Views.TrendingReposList exposing (TrendingReposList, trendingReposListDec
 
 import Browser.Dom exposing (Element)
 import Element as El exposing (Element, column, el, fillPortion, row, text)
+import Element.Background as Background
 import Element.Border as Border
 import Element.Font as Font
+import Hex exposing (fromString)
 import Json.Decode as Decode
 import Views.Icons as Icons
 
@@ -115,11 +117,46 @@ trendingRepoItem repo =
                 ]
                 [ text repo.description ]
 
+        languageInfo : Element msg
+        languageInfo =
+            case repo.language of
+                Maybe.Just language ->
+                    case repo.languageColor of
+                        Maybe.Just languageColor ->
+                            let
+                                rgbColorResult : Result String El.Color
+                                rgbColorResult =
+                                    convertFromHexToRgbColor languageColor
+                            in
+                            case rgbColorResult of
+                                Result.Ok color ->
+                                    row
+                                        [El.spacing 5]
+                                        [ el
+                                            [ El.width <| El.px 12
+                                            , El.height <| El.px 12
+                                            , Background.color color
+                                            , Border.rounded 50
+                                            ]
+                                            El.none
+                                        , text language
+                                        ]
+
+                                Err _ ->
+                                    El.none
+
+                        Maybe.Nothing ->
+                            El.none
+
+                Maybe.Nothing ->
+                    El.none
+
         bottomLeftRow : Element msg
         bottomLeftRow =
             row
                 [ Font.color <| El.rgb255 88 96 105, Font.size 12, El.width El.fill, El.spacing 16 ]
-                [ El.row [] [ Icons.starIcon, text <| " " ++ String.fromInt repo.stars ]
+                [ languageInfo
+                , El.row [] [ Icons.starIcon, text <| " " ++ String.fromInt repo.stars ]
                 , El.row [] [ Icons.forkIcon, text <| " " ++ String.fromInt repo.forks ]
                 ]
     in
@@ -142,3 +179,41 @@ trendingRepoItem repo =
 trendingReposList : TrendingReposList -> List (Element msg)
 trendingReposList repos =
     List.map trendingRepoItem repos
+
+
+convertFromHexToRgbColor : String -> Result String El.Color
+convertFromHexToRgbColor hexColor =
+    let
+        colorWithoutHash : String
+        colorWithoutHash =
+            String.dropLeft 1 hexColor
+
+        r : String
+        r =
+            String.left 2 colorWithoutHash
+
+        g : String
+        g =
+            String.slice 2 4 colorWithoutHash
+
+        b : String
+        b =
+            String.right 2 colorWithoutHash
+
+        rInt : Result String Int
+        rInt =
+            fromString r
+
+        gInt : Result String Int
+        gInt =
+            fromString g
+
+        bInt : Result String Int
+        bInt =
+            fromString b
+    in
+    Result.map3
+        (\rPart gPart bPart -> El.rgb255 rPart gPart bPart)
+        rInt
+        gInt
+        bInt

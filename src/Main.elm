@@ -128,6 +128,7 @@ trendingView model repos =
             ]
             [ trendingViewControls model
             , trendingReposView repos
+            , el [El.height <| El.px 50] El.none
             ]
         , el [ El.width <| fillPortion 1 ] El.none
         ]

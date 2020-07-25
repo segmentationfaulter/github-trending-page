@@ -2,9 +2,10 @@ module Views.TrendingReposList exposing (TrendingReposList, trendingReposListDec
 
 import Browser.Dom exposing (Element)
 import Element as El exposing (Element, column, el, fillPortion, row, text)
-import Element.Font as Font
 import Element.Border as Border
+import Element.Font as Font
 import Json.Decode as Decode
+import Views.Icons as Icons
 
 
 type alias TrendingRepo =
@@ -113,6 +114,13 @@ trendingRepoItem repo =
                 , Font.color <| El.rgb255 88 96 105
                 ]
                 [ text repo.description ]
+
+        bottomLeftRow : Element msg
+        bottomLeftRow =
+            row
+                [ Font.color <| El.rgb255 88 96 105, Font.size 12, El.width El.fill ]
+                [ El.row [] [ Icons.starIcon, text <| " " ++ String.fromInt repo.stars ]
+                ]
     in
     row
         [ El.width El.fill
@@ -124,6 +132,7 @@ trendingRepoItem repo =
             [ El.width <| El.fillPortion 8, El.spacing 8 ]
             [ El.newTabLink [] { url = repo.url, label = repoTitle }
             , repoDescription
+            , bottomLeftRow
             ]
         , el [ El.width <| El.fillPortion 2 ] El.none
         ]

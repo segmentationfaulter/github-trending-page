@@ -97,10 +97,11 @@ trendingRepoItem repo =
         repoTitle =
             row
                 [ Font.color <| El.rgb255 3 102 214 ]
-                [ el
+                [ Icons.repoIcon
+                , el
                     []
                   <|
-                    text (repo.author ++ "/")
+                    text (" " ++ repo.author ++ "/")
                 , el
                     [ Font.semiBold ]
                   <|

@@ -5,6 +5,7 @@ import Element as El exposing (Element, column, el, fillPortion, row, text)
 import Element.Background as Background
 import Element.Border as Border
 import Element.Font as Font
+import Element.Input exposing (username)
 import Hex exposing (fromString)
 import Json.Decode as Decode
 import Views.Icons as Icons
@@ -20,11 +21,23 @@ type alias TrendingRepo =
     , stars : Int
     , forks : Int
     , starsToday : Int
+    , builtBy : BuiltBy
     }
 
 
 type alias TrendingReposList =
     List TrendingRepo
+
+
+type alias Developer =
+    { username : String
+    , href : String
+    , avatar : String
+    }
+
+
+type alias BuiltBy =
+    List Developer
 
 
 trendingReposListDecoder : Decode.Decoder TrendingReposList
@@ -59,9 +72,19 @@ trendingReposListDecoder =
 
                 starsTodayDecoder =
                     Decode.field "currentPeriodStars" Decode.int
+
+                builtByDecoder : Decode.Decoder BuiltBy
+                builtByDecoder =
+                    Decode.field "builtBy" <|
+                        Decode.list <|
+                            Decode.map3
+                                (\username href avatar -> { username = username, href = href, avatar = avatar })
+                                (Decode.field "username" Decode.string)
+                                (Decode.field "href" Decode.string)
+                                (Decode.field "avatar" Decode.string)
             in
             Decode.map2
-                (\a b -> { author = a.author, name = a.name, url = a.url, description = a.description, language = a.language, languageColor = a.languageColor, stars = b.stars, forks = b.forks, starsToday = b.starsToday })
+                (\a b -> { author = a.author, name = a.name, url = a.url, description = a.description, language = a.language, languageColor = a.languageColor, stars = b.stars, forks = b.forks, starsToday = b.starsToday, builtBy = b.builtBy })
                 (Decode.map6
                     (\author name url description language languageColor -> { author = author, name = name, url = url, description = description, language = language, languageColor = languageColor })
                     authorDecoder
@@ -71,11 +94,12 @@ trendingReposListDecoder =
                     languageDecoder
                     languageColorDecoder
                 )
-                (Decode.map3
-                    (\stars forks starsToday -> { stars = stars, forks = forks, starsToday = starsToday })
+                (Decode.map4
+                    (\stars forks starsToday builtBy -> { stars = stars, forks = forks, starsToday = starsToday, builtBy = builtBy })
                     starsDecoder
                     forksDecoder
                     starsTodayDecoder
+                    builtByDecoder
                 )
     in
     Decode.list trendingRepoDecoder

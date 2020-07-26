@@ -211,10 +211,12 @@ trendingRepoItem repo =
         avatar : Developer -> Element msg
         avatar developer =
             el
-                [
-                    Border.rounded 50,
-                    Border.width 1,
-                    Border.color <| El.rgb255 255 255 255
+                [ Border.rounded 10
+                , Border.width 1
+                , Border.color <| El.rgb255 255 255 255
+                , El.width <| El.px 20
+                , El.height <| El.px 20
+                , El.clip
                 ]
             <|
                 El.image

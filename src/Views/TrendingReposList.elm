@@ -163,9 +163,24 @@ trendingRepoItem repo =
         starsToday : Element msg
         starsToday =
             El.paragraph
-                [ Font.color <| El.rgb255 88 96 105, Font.size 12 ]
+                [ El.alignBottom ]
                 [ Icons.starIcon
                 , text <| " " ++ String.fromInt repo.starsToday ++ " stars today"
+                ]
+
+        starButton : Element msg
+        starButton =
+            row
+                [ El.alignRight
+                , El.alignTop
+                , El.paddingXY 12 3
+                , Background.color <| El.rgb255 250 251 252
+                , Border.color <| El.rgba255 27 31 35 0.15
+                , Border.width 1
+                , Border.rounded 6
+                ]
+                [ Icons.starIcon
+                , text " Star"
                 ]
     in
     row
@@ -180,7 +195,10 @@ trendingRepoItem repo =
             , repoDescription
             , bottomLeftRow
             ]
-        , el [ El.width <| El.fillPortion 2, El.alignBottom, Font.alignRight ] starsToday
+        , column [ El.width <| El.fillPortion 2, Font.alignRight, Font.color <| El.rgb255 88 96 105, Font.size 12, El.height El.fill ]
+            [ starButton
+            , starsToday
+            ]
         ]
 
 

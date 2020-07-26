@@ -5,7 +5,6 @@ import Element as El exposing (Element, column, el, fillPortion, row, text)
 import Element.Background as Background
 import Element.Border as Border
 import Element.Font as Font
-import Element.Input exposing (username)
 import Hex exposing (fromString)
 import Json.Decode as Decode
 import Views.Icons as Icons
@@ -183,6 +182,7 @@ trendingRepoItem repo =
                 [ languageInfo
                 , El.row [] [ Icons.starIcon, text <| " " ++ String.fromInt repo.stars ]
                 , El.row [] [ Icons.forkIcon, text <| " " ++ String.fromInt repo.forks ]
+                , builtBy
                 ]
 
         starsToday : Element msg
@@ -207,6 +207,31 @@ trendingRepoItem repo =
                 [ Icons.starIcon
                 , text " Star"
                 ]
+
+        avatar : Developer -> Element msg
+        avatar developer =
+            el
+                [
+                    Border.rounded 50,
+                    Border.width 1,
+                    Border.color <| El.rgb255 255 255 255
+                ]
+            <|
+                El.image
+                    [ El.width <| El.px 20
+                    , El.height <| El.px 20
+                    ]
+                    { src = developer.avatar
+                    , description = developer.username
+                    }
+
+        builtBy : Element msg
+        builtBy =
+            row
+                [ El.spacing 5 ]
+            <|
+                text "Built by"
+                    :: List.map avatar repo.builtBy
     in
     row
         [ El.width El.fill

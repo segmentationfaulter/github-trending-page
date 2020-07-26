@@ -163,10 +163,9 @@ trendingRepoItem repo =
         starsToday : Element msg
         starsToday =
             El.paragraph
-                [Font.color <| El.rgb255 88 96 105, Font.size 12]
-                [
-                    Icons.starIcon,
-                    text <| " " ++ String.fromInt repo.starsToday ++ " stars today"
+                [ Font.color <| El.rgb255 88 96 105, Font.size 12 ]
+                [ Icons.starIcon
+                , text <| " " ++ String.fromInt repo.starsToday ++ " stars today"
                 ]
     in
     row
@@ -195,7 +194,7 @@ convertFromHexToRgbColor hexColor =
     let
         colorWithoutHash : String
         colorWithoutHash =
-            String.dropLeft 1 hexColor
+            hexColor |> String.toLower |> String.dropLeft 1
 
         r : String
         r =

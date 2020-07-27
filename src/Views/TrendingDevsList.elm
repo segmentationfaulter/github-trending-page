@@ -1,6 +1,7 @@
-module Views.TrendingDevsList exposing (TrendingDevsList, trendingDevsListDecoder)
+module Views.TrendingDevsList exposing (TrendingDevsList, trendingDevsListDecoder, trendingDevsView)
 
 import Json.Decode as Decode
+import Element as El exposing (Element, column, el, fillPortion, row, text)
 
 
 type alias TrendingDev =
@@ -9,7 +10,7 @@ type alias TrendingDev =
     , url : String
     , sponsorUrl : Maybe String
     , avatar : String
-    , repo : PopularRepo
+    , repo : Maybe PopularRepo
     }
 
 
@@ -42,9 +43,9 @@ trendingDevsListDecoder =
         avatarDecoder =
             Decode.field "avatar" Decode.string
 
-        repoDecoder : Decode.Decoder PopularRepo
+        repoDecoder : Decode.Decoder (Maybe PopularRepo)
         repoDecoder =
-            Decode.field "repo"
+            Decode.maybe <| Decode.field "repo"
                 (Decode.map3
                     (\name description url -> { name = name, description = description, url = url })
                     (Decode.field "name" Decode.string)
@@ -60,3 +61,11 @@ trendingDevsListDecoder =
         sponsorUrlDecoder
         avatarDecoder
         repoDecoder
+
+trendingDevsView : TrendingDevsList -> Element msg
+trendingDevsView trendingDevs =
+    column
+        []
+        [
+            text "Devs view"
+        ]

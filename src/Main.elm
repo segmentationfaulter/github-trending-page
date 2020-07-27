@@ -10,7 +10,7 @@ import Element.Region exposing (mainContent)
 import Html exposing (Html)
 import Http
 import Views.Header exposing (headerView)
-import Views.TrendingDevsList exposing (TrendingDevsList, trendingDevsListDecoder)
+import Views.TrendingDevsList exposing (TrendingDevsList, trendingDevsListDecoder, trendingDevsView)
 import Views.TrendingReposList exposing (TrendingReposList, trendingReposListDecoder, trendingReposView)
 
 
@@ -22,7 +22,7 @@ type Model
     = InitialLoading
     | ReposView TrendingReposList
     | LoadingDevsView
-    | DevsView
+    | DevsView TrendingDevsList
     | Failure Http.Error
 
 
@@ -75,7 +75,7 @@ update msg model =
         GotTrendingDevs result ->
             case result of
                 Ok trendingDevs ->
-                    ( model, Cmd.none )
+                    ( DevsView trendingDevs, Cmd.none )
 
                 Err httpError ->
                     ( Failure httpError, Cmd.none )
@@ -91,30 +91,46 @@ update msg model =
 view : Model -> Html Msg
 view model =
     let
-        selectedView : Element Msg
-        selectedView =
+        currentView : Element Msg
+        currentView =
             let
                 loadingScreen : Element Msg
                 loadingScreen =
                     el [ Font.size 40, El.centerX, El.centerY ] <| text "Loading..."
+
+                trendingView : Element Msg -> Element Msg
+                trendingView selectedView =
+                    row
+                        [ El.width El.fill
+                        ]
+                        [ el [ El.width <| fillPortion 1 ] El.none
+                        , column
+                            [ El.width <| fillPortion 5
+                            ]
+                            [ trendingViewControls model
+                            , selectedView
+                            , el [ El.height <| El.px 50 ] El.none
+                            ]
+                        , el [ El.width <| fillPortion 1 ] El.none
+                        ]
             in
             case model of
                 InitialLoading ->
                     loadingScreen
 
                 ReposView trendingRepos ->
-                    elmUIView model trendingRepos
+                    elmUIView <| trendingView <| trendingReposView trendingRepos
 
                 LoadingDevsView ->
                     loadingScreen
 
-                DevsView ->
-                    el [ Font.size 40, El.centerX, El.centerY ] <| text "Loading..."
+                DevsView trendingDevs ->
+                    elmUIView <| trendingView <| trendingDevsView trendingDevs
 
                 Failure error ->
                     failureView error
     in
-    El.layout [] <| selectedView
+    El.layout [] <| currentView
 
 
 failureView : Http.Error -> Element Msg
@@ -136,32 +152,15 @@ failureView error =
             el [] <| text errorMsg
 
 
-elmUIView : Model -> TrendingReposList -> Element Msg
-elmUIView model repos =
+elmUIView : Element Msg -> Element Msg
+elmUIView trendingView =
     column
         [ mainContent
         , El.width El.fill
         , El.spacing 40
         ]
         [ headerView
-        , trendingView model repos
-        ]
-
-
-trendingView : Model -> TrendingReposList -> Element Msg
-trendingView model repos =
-    row
-        [ El.width El.fill
-        ]
-        [ el [ El.width <| fillPortion 1 ] El.none
-        , column
-            [ El.width <| fillPortion 5
-            ]
-            [ trendingViewControls model
-            , trendingReposView repos
-            , el [ El.height <| El.px 50 ] El.none
-            ]
-        , el [ El.width <| fillPortion 1 ] El.none
+        , trendingView
         ]
 
 
@@ -183,18 +182,10 @@ trendingViewControls model =
                 isActive =
                     case model of
                         ReposView _ ->
-                            if label == reposButtonLabel then
-                                True
+                            label == reposButtonLabel
 
-                            else
-                                False
-
-                        DevsView ->
-                            if label == devsButtonLabel then
-                                True
-
-                            else
-                                False
+                        DevsView _ ->
+                            label == devsButtonLabel
 
                         InitialLoading ->
                             False

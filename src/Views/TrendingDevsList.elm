@@ -1,4 +1,4 @@
-module Views.TrendingDevsList exposing (TrendingDevsList)
+module Views.TrendingDevsList exposing (TrendingDevsList, trendingDevsListDecoder)
 
 import Json.Decode as Decode
 

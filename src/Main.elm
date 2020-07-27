@@ -10,6 +10,7 @@ import Element.Region exposing (mainContent)
 import Html exposing (Html)
 import Http
 import Views.Header exposing (headerView)
+import Views.TrendingDevsList exposing (TrendingDevsList, trendingDevsListDecoder)
 import Views.TrendingReposList exposing (TrendingReposList, trendingReposListDecoder, trendingReposView)
 
 
@@ -18,15 +19,16 @@ import Views.TrendingReposList exposing (TrendingReposList, trendingReposListDec
 
 
 type Model
-    = Loading
+    = InitialLoading
     | ReposView TrendingReposList
+    | LoadingDevsView
     | DevsView
     | Failure Http.Error
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( Loading, fetchTrendingRepos )
+    ( InitialLoading, fetchTrendingRepos )
 
 
 fetchTrendingRepos : Cmd Msg
@@ -37,6 +39,14 @@ fetchTrendingRepos =
         }
 
 
+fetchTrendingDevs : Cmd Msg
+fetchTrendingDevs =
+    Http.get
+        { url = "https://ghapi.huchen.dev/developers"
+        , expect = Http.expectJson GotTrendingDevs trendingDevsListDecoder
+        }
+
+
 
 ---- UPDATE ----
 
@@ -44,6 +54,8 @@ fetchTrendingRepos =
 type Msg
     = Noop
     | GotTrendingRepos (Result Http.Error TrendingReposList)
+    | SwithchToDevsView
+    | GotTrendingDevs (Result Http.Error TrendingDevsList)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -53,6 +65,17 @@ update msg model =
             case result of
                 Ok trendingRepos ->
                     ( ReposView trendingRepos, Cmd.none )
+
+                Err httpError ->
+                    ( Failure httpError, Cmd.none )
+
+        SwithchToDevsView ->
+            ( LoadingDevsView, fetchTrendingDevs )
+
+        GotTrendingDevs result ->
+            case result of
+                Ok trendingDevs ->
+                    ( model, Cmd.none )
 
                 Err httpError ->
                     ( Failure httpError, Cmd.none )
@@ -70,12 +93,20 @@ view model =
     let
         selectedView : Element Msg
         selectedView =
-            case model of
-                Loading ->
+            let
+                loadingScreen : Element Msg
+                loadingScreen =
                     el [ Font.size 40, El.centerX, El.centerY ] <| text "Loading..."
+            in
+            case model of
+                InitialLoading ->
+                    loadingScreen
 
                 ReposView trendingRepos ->
                     elmUIView model trendingRepos
+
+                LoadingDevsView ->
+                    loadingScreen
 
                 DevsView ->
                     el [ Font.size 40, El.centerX, El.centerY ] <| text "Loading..."
@@ -128,7 +159,7 @@ trendingView model repos =
             ]
             [ trendingViewControls model
             , trendingReposView repos
-            , el [El.height <| El.px 50] El.none
+            , el [ El.height <| El.px 50 ] El.none
             ]
         , el [ El.width <| fillPortion 1 ] El.none
         ]
@@ -165,10 +196,13 @@ trendingViewControls model =
                             else
                                 False
 
-                        Loading ->
+                        InitialLoading ->
                             False
 
                         Failure _ ->
+                            False
+
+                        LoadingDevsView ->
                             False
 
                 activeStateColor : El.Color
@@ -242,7 +276,7 @@ trendingViewControls model =
         , Background.color <| El.rgb255 246 248 250
         ]
         [ renderButton reposButtonLabel Noop
-        , renderButton devsButtonLabel Noop
+        , renderButton devsButtonLabel SwithchToDevsView
         ]
 
 

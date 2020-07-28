@@ -5,9 +5,9 @@ import Element.Background as Background
 import Element.Border as Border
 import Element.Font as Font
 import Element.Region exposing (heading)
+import Html exposing (label)
 import Json.Decode as Decode
 import Views.Icons as Icons
-import Html exposing (label)
 
 
 type alias TrendingDev =
@@ -191,13 +191,13 @@ trendingDevItem index dev =
             let
                 buttonAttributes : List (El.Attribute msg)
                 buttonAttributes =
-                    [ El.centerY
-                    , El.paddingXY 12 3
+                    [ El.paddingXY 12 3
                     , Background.color <| El.rgb255 250 251 252
                     , Border.width 1
                     , Border.rounded 6
                     , Border.color <| El.rgba255 27 31 35 0.15
                     , El.height <| El.px 28
+                    , El.alignRight
                     ]
 
                 followButton : Element msg
@@ -207,9 +207,9 @@ trendingDevItem index dev =
                         button =
                             el
                                 []
-                                <| text "Follow"
+                            <|
+                                text "Follow"
                     in
-
                     El.newTabLink
                         buttonAttributes
                         { url = dev.url, label = button }

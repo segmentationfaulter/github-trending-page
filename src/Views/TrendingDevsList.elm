@@ -6,6 +6,7 @@ import Element.Border as Border
 import Element.Font as Font
 import Element.Region exposing (heading)
 import Json.Decode as Decode
+import Views.Icons as Icons
 
 
 type alias TrendingDev =
@@ -130,20 +131,67 @@ trendingDevItem index dev =
 
         centerAlignedElements : Element msg
         centerAlignedElements =
+            let
+                popularRepoText : Element msg
+                popularRepoText =
+                    El.paragraph
+                        [ Font.size 12
+                        , El.alignTop
+                        , El.spacing 6
+                        ]
+                        [ Icons.fireIcon
+                        , text " POPULAR REPO"
+                        ]
+
+                repo : Element msg
+                repo =
+                    case dev.repo of
+                        Nothing ->
+                            El.none
+
+                        Just popularRepo ->
+                            El.paragraph
+                                [ Font.size 16
+                                , El.spacing 4
+                                , Font.color <| El.rgb255 3 102 214
+                                , Font.semiBold
+                                ]
+                                [ Icons.repoIcon
+                                , text <| " " ++ popularRepo.name
+                                ]
+
+                descriptionText : Element msg
+                descriptionText =
+                    case dev.repo of
+                        Nothing ->
+                            El.none
+
+                        Just { description } ->
+                            El.paragraph
+                                [ Font.size 12
+                                , El.spacing 6
+                                ]
+                                [ text description ]
+            in
             column
-                [
-                    El.width <| El.fillPortion 1
+                [ El.width <| El.fillPortion 1
+                , El.alignTop
+                , El.centerX
+                , Font.alignLeft
+                , El.spacing 8
                 ]
-                [text "center"]
+                [ popularRepoText
+                , repo
+                , descriptionText
+                ]
 
         rightAlignedElements : Element msg
         rightAlignedElements =
             row
-                [
-                    El.width <| fillPortion 1
-                    , El.alignRight
+                [ El.width <| fillPortion 1
+                , El.alignRight
                 ]
-                [text "right"]
+                [ text "right" ]
     in
     row
         [ El.padding 16

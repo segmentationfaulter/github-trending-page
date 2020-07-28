@@ -187,8 +187,8 @@ trendingRepoItem repo =
 
         starsToday : Element msg
         starsToday =
-            El.paragraph
-                [ El.alignBottom ]
+            El.row
+                [ El.alignBottom, El.alignRight ]
                 [ Icons.starIcon
                 , text <| " " ++ String.fromInt repo.starsToday ++ " stars today"
                 ]

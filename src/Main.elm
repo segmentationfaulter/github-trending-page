@@ -86,7 +86,7 @@ update msg model =
                     ( Failure httpError, Cmd.none )
 
         SwitchToReposView trendingRepos trendingDevs ->
-            ( ReposView trendingRepos <| trendingDevs, Cmd.none )
+            ( ReposView trendingRepos trendingDevs, Cmd.none )
 
 
 

@@ -135,9 +135,8 @@ trendingDevItem index dev =
             let
                 popularRepoText : Element msg
                 popularRepoText =
-                    El.paragraph
+                    El.row
                         [ Font.size 12
-                        , El.alignTop
                         , El.spacing 6
                         ]
                         [ Icons.fireIcon
@@ -151,9 +150,8 @@ trendingDevItem index dev =
                             El.none
 
                         Just popularRepo ->
-                            El.paragraph
+                            El.row
                                 [ Font.size 16
-                                , El.spacing 4
                                 , Font.color <| El.rgb255 3 102 214
                                 , Font.semiBold
                                 ]

@@ -72,7 +72,8 @@ update msg model =
         SwithchToDevsView trendingRepos devs ->
             case devs of
                 Just trendingDevs ->
-                    (DevsView trendingRepos trendingDevs, Cmd.none)
+                    ( DevsView trendingRepos trendingDevs, Cmd.none )
+
                 Nothing ->
                     ( LoadingDevsView, fetchTrendingDevs trendingRepos )
 
@@ -102,8 +103,8 @@ view model =
                 loadingScreen =
                     el [ Font.size 40, El.centerX, El.centerY ] <| text "Loading..."
 
-                trendingView : Element Msg -> Element Msg
-                trendingView selectedView =
+                trendingView : TrendingReposList -> Maybe TrendingDevsList -> Element Msg -> Element Msg
+                trendingView repos devs selectedView =
                     row
                         [ El.width El.fill
                         ]
@@ -111,7 +112,7 @@ view model =
                         , column
                             [ El.width <| fillPortion 5
                             ]
-                            [ trendingViewControls model
+                            [ trendingViewControls model repos devs
                             , selectedView
                             , el [ El.height <| El.px 50 ] El.none
                             ]
@@ -123,13 +124,13 @@ view model =
                     loadingScreen
 
                 ReposView trendingRepos trendingDevs ->
-                    elmUIView <| trendingView <| trendingReposView trendingRepos
+                    elmUIView <| trendingView trendingRepos trendingDevs <| trendingReposView trendingRepos
 
                 LoadingDevsView ->
                     loadingScreen
 
                 DevsView trendingRepos trendingDevs ->
-                    elmUIView <| trendingView <| trendingDevsView trendingDevs
+                    elmUIView <| trendingView trendingRepos (Just trendingDevs) <| trendingDevsView trendingDevs
 
                 Failure error ->
                     failureView error
@@ -168,8 +169,8 @@ elmUIView trendingView =
         ]
 
 
-trendingViewControls : Model -> Element Msg
-trendingViewControls model =
+trendingViewControls : Model -> TrendingReposList -> Maybe TrendingDevsList -> Element Msg
+trendingViewControls model repos devs =
     let
         reposButtonLabel : String
         reposButtonLabel =
@@ -260,28 +261,19 @@ trendingViewControls model =
                 , El.height <| El.px 32
                 ]
                 { onPress = Just msg, label = text label }
-
-        controls : TrendingReposList -> Maybe TrendingDevsList -> Element Msg
-        controls repos devs  =
-            row
-                [ Border.width 1
-                , Border.color <| El.rgb255 225 228 232
-                , Border.roundEach { topLeft = 6, topRight = 6, bottomLeft = 0, bottomRight = 0 }
-                , El.width El.fill
-                , El.height <| El.px 66
-                , El.padding 16
-                , Background.color <| El.rgb255 246 248 250
-                ]
-                [ renderButton reposButtonLabel <| SwitchToReposView repos devs
-                , renderButton devsButtonLabel <| SwithchToDevsView repos devs
-                ]
     in
-    case model of
-        InitialLoading -> El.none
-        ReposView repos devs -> controls repos devs
-        LoadingDevsView -> El.none
-        DevsView repos devs -> controls repos <| Just devs
-        Failure _ -> El.none
+    row
+        [ Border.width 1
+        , Border.color <| El.rgb255 225 228 232
+        , Border.roundEach { topLeft = 6, topRight = 6, bottomLeft = 0, bottomRight = 0 }
+        , El.width El.fill
+        , El.height <| El.px 66
+        , El.padding 16
+        , Background.color <| El.rgb255 246 248 250
+        ]
+        [ renderButton reposButtonLabel <| SwitchToReposView repos devs
+        , renderButton devsButtonLabel <| SwithchToDevsView repos devs
+        ]
 
 
 

@@ -20,9 +20,9 @@ import Views.TrendingReposList exposing (TrendingReposList, trendingReposListDec
 
 type Model
     = InitialLoading
-    | ReposView TrendingReposList
+    | ReposView TrendingReposList (Maybe TrendingDevsList)
     | LoadingDevsView
-    | DevsView TrendingDevsList
+    | DevsView TrendingReposList TrendingDevsList
     | Failure Http.Error
 
 
@@ -39,11 +39,11 @@ fetchTrendingRepos =
         }
 
 
-fetchTrendingDevs : Cmd Msg
-fetchTrendingDevs =
+fetchTrendingDevs : TrendingReposList -> Cmd Msg
+fetchTrendingDevs repos =
     Http.get
         { url = "https://ghapi.huchen.dev/developers"
-        , expect = Http.expectJson GotTrendingDevs trendingDevsListDecoder
+        , expect = Http.expectJson (GotTrendingDevs repos) trendingDevsListDecoder
         }
 
 
@@ -52,10 +52,10 @@ fetchTrendingDevs =
 
 
 type Msg
-    = Noop
-    | GotTrendingRepos (Result Http.Error TrendingReposList)
-    | SwithchToDevsView
-    | GotTrendingDevs (Result Http.Error TrendingDevsList)
+    = GotTrendingRepos (Result Http.Error TrendingReposList)
+    | SwithchToDevsView TrendingReposList (Maybe TrendingDevsList)
+    | GotTrendingDevs TrendingReposList (Result Http.Error TrendingDevsList)
+    | SwitchToReposView TrendingReposList (Maybe TrendingDevsList)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -64,24 +64,28 @@ update msg model =
         GotTrendingRepos result ->
             case result of
                 Ok trendingRepos ->
-                    ( ReposView trendingRepos, Cmd.none )
+                    ( ReposView trendingRepos Nothing, Cmd.none )
 
                 Err httpError ->
                     ( Failure httpError, Cmd.none )
 
-        SwithchToDevsView ->
-            ( LoadingDevsView, fetchTrendingDevs )
+        SwithchToDevsView trendingRepos devs ->
+            case devs of
+                Just trendingDevs ->
+                    (DevsView trendingRepos trendingDevs, Cmd.none)
+                Nothing ->
+                    ( LoadingDevsView, fetchTrendingDevs trendingRepos )
 
-        GotTrendingDevs result ->
+        GotTrendingDevs trendingRepos result ->
             case result of
                 Ok trendingDevs ->
-                    ( DevsView trendingDevs, Cmd.none )
+                    ( DevsView trendingRepos trendingDevs, Cmd.none )
 
                 Err httpError ->
                     ( Failure httpError, Cmd.none )
 
-        Noop ->
-            ( model, Cmd.none )
+        SwitchToReposView trendingRepos trendingDevs ->
+            ( ReposView trendingRepos <| trendingDevs, Cmd.none )
 
 
 
@@ -118,13 +122,13 @@ view model =
                 InitialLoading ->
                     loadingScreen
 
-                ReposView trendingRepos ->
+                ReposView trendingRepos trendingDevs ->
                     elmUIView <| trendingView <| trendingReposView trendingRepos
 
                 LoadingDevsView ->
                     loadingScreen
 
-                DevsView trendingDevs ->
+                DevsView trendingRepos trendingDevs ->
                     elmUIView <| trendingView <| trendingDevsView trendingDevs
 
                 Failure error ->
@@ -181,10 +185,10 @@ trendingViewControls model =
                 isActive : Bool
                 isActive =
                     case model of
-                        ReposView _ ->
+                        ReposView _ _ ->
                             label == reposButtonLabel
 
-                        DevsView _ ->
+                        DevsView _ _ ->
                             label == devsButtonLabel
 
                         InitialLoading ->
@@ -256,19 +260,28 @@ trendingViewControls model =
                 , El.height <| El.px 32
                 ]
                 { onPress = Just msg, label = text label }
+
+        controls : TrendingReposList -> Maybe TrendingDevsList -> Element Msg
+        controls repos devs  =
+            row
+                [ Border.width 1
+                , Border.color <| El.rgb255 225 228 232
+                , Border.roundEach { topLeft = 6, topRight = 6, bottomLeft = 0, bottomRight = 0 }
+                , El.width El.fill
+                , El.height <| El.px 66
+                , El.padding 16
+                , Background.color <| El.rgb255 246 248 250
+                ]
+                [ renderButton reposButtonLabel <| SwitchToReposView repos devs
+                , renderButton devsButtonLabel <| SwithchToDevsView repos devs
+                ]
     in
-    row
-        [ Border.width 1
-        , Border.color <| El.rgb255 225 228 232
-        , Border.roundEach { topLeft = 6, topRight = 6, bottomLeft = 0, bottomRight = 0 }
-        , El.width El.fill
-        , El.height <| El.px 66
-        , El.padding 16
-        , Background.color <| El.rgb255 246 248 250
-        ]
-        [ renderButton reposButtonLabel Noop
-        , renderButton devsButtonLabel SwithchToDevsView
-        ]
+    case model of
+        InitialLoading -> El.none
+        ReposView repos devs -> controls repos devs
+        LoadingDevsView -> El.none
+        DevsView repos devs -> controls repos <| Just devs
+        Failure _ -> El.none
 
 
 

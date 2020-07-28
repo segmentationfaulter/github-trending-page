@@ -120,20 +120,42 @@ trendingDevItem index dev =
             in
             row
                 [ El.spacing 16
+                , El.width <| El.fillPortion 1
+                , El.alignLeft
                 ]
                 [ rowNumber
                 , avatar
                 , devName
                 ]
+
+        centerAlignedElements : Element msg
+        centerAlignedElements =
+            column
+                [
+                    El.width <| El.fillPortion 1
+                ]
+                [text "center"]
+
+        rightAlignedElements : Element msg
+        rightAlignedElements =
+            row
+                [
+                    El.width <| fillPortion 1
+                    , El.alignRight
+                ]
+                [text "right"]
     in
     row
         [ El.padding 16
+        , El.spaceEvenly
         , Font.color <| El.rgb255 36 41 46
         , Border.color <| El.rgb255 225 228 232
         , Border.widthEach { left = 1, bottom = 1, right = 1, top = 0 }
         , El.width El.fill
         ]
         [ leftAlignedElements
+        , centerAlignedElements
+        , rightAlignedElements
         ]
 
 

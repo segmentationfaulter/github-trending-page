@@ -7,6 +7,7 @@ import Element.Font as Font
 import Element.Region exposing (heading)
 import Json.Decode as Decode
 import Views.Icons as Icons
+import Html exposing (label)
 
 
 type alias TrendingDev =
@@ -187,11 +188,61 @@ trendingDevItem index dev =
 
         rightAlignedElements : Element msg
         rightAlignedElements =
+            let
+                buttonAttributes : List (El.Attribute msg)
+                buttonAttributes =
+                    [ El.centerY
+                    , El.paddingXY 12 3
+                    , Background.color <| El.rgb255 250 251 252
+                    , Border.width 1
+                    , Border.rounded 6
+                    , Border.color <| El.rgba255 27 31 35 0.15
+                    , El.height <| El.px 28
+                    ]
+
+                followButton : Element msg
+                followButton =
+                    let
+                        button : Element msg
+                        button =
+                            el
+                                []
+                                <| text "Follow"
+                    in
+
+                    El.newTabLink
+                        buttonAttributes
+                        { url = dev.url, label = button }
+
+                sponsorButton : Element msg
+                sponsorButton =
+                    let
+                        button : Element msg
+                        button =
+                            El.row
+                                []
+                                [ Icons.heartIcon
+                                , text "  Sponsor"
+                                ]
+                    in
+                    case dev.sponsorUrl of
+                        Nothing ->
+                            El.none
+
+                        Just sponsorUrl ->
+                            El.newTabLink
+                                buttonAttributes
+                                { url = sponsorUrl, label = button }
+            in
             row
                 [ El.width <| fillPortion 1
-                , El.alignRight
+                , El.alignTop
+                , Font.size 12
+                , El.spacing 8
                 ]
-                [ text "right" ]
+                [ sponsorButton
+                , followButton
+                ]
     in
     row
         [ El.padding 16
